@@ -6,7 +6,9 @@
   a. First the correct version of root can be set with:
 
   source /data1/jbkim/Linux/el7_v1/root-6.24.02/bin/thisroot.sh
+  
   export LD_LIBRARY_PATH=/data1/jbkim/Linux/el7_v1/lib:$LD_LIBRARY_PATH
+  
   export LD_LIBRARY_PATH=/data1/jbkim/Linux/el7_v1/lib64:$LD_LIBRARY_PATH
 
   b. The sceond component is the specific version of python which is found here:
