@@ -3,6 +3,7 @@
 # Procedure for Ntuples:
 1. To make ntuples for BDTS you first need to ssh onto cms37
 2. There are to run the X_ntuple_producer.py file
+
   a. First the correct version of root can be set with:
 
   source /data1/jbkim/Linux/el7_v1/root-6.24.02/bin/thisroot.sh
