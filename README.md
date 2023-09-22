@@ -1,5 +1,7 @@
 # HZG BDT ReadMe
 
+Before making ntuples run folder_setup.sh command which just makes some folders that are used by TMVA
+
 # Procedure for Ntuples:
 1. To make ntuples for BDTS you first need to ssh onto cms37
 2. There are to run the X_ntuple_producer.py file
