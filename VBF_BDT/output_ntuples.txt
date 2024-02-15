@@ -1,0 +1,4 @@
+['/net/cms11/cms11r0/pico/NanoAODv9/htozgamma_kingscanyon_v1/2016/mc/merged_zgmc_llg/*ggF*HToZG*125_*.root']
+['/net/cms11/cms11r0/pico/NanoAODv9/htozgamma_kingscanyon_v1/2016/mc/merged_zgmc_llg/*VBF*HToZG*125_*.root']
+/net/cms11/cms11r0/pico/NanoAODv9/htozgamma_kingscanyon_v1/2016/mc/merged_zgmc_llg/*ggF*HToZG*125_*.root
+('photon_mva', 'photon_idmva[0]')

@@ -44,27 +44,23 @@ using RVec = ROOT::VecOps::RVec<C>;
 #include "TROOT.h"
 #include "TMVA/Reader.h"
 
-float getMVA(float photon_mva, float min_dR, float max_dR, float pt_mass, float cosTheta, float costheta, float phi, float photon_res, float photon_rapidity, float l1_rapidity, float l2_rapidity){
+float getMVA(float jj_deta,float jj_dphi,float Zyjj_dr,float pt_bal,float zep_var,float mjj,float drmin_yj,float j1_pt,float j2_pt,int event){
+
     TMVA::Reader *rdr =  new TMVA::Reader("Silent");
-
-    rdr -> TMVA::Reader::AddVariable("photon_mva", &photon_mva);
-    rdr -> TMVA::Reader::AddVariable("min_dR", &min_dR);
-    rdr -> TMVA::Reader::AddVariable("max_dR", &max_dR);
-    rdr -> TMVA::Reader::AddVariable("pt_mass", &pt_mass);
-    rdr -> TMVA::Reader::AddVariable("cosTheta", &cosTheta);
-    rdr -> TMVA::Reader::AddVariable("costheta", &costheta);
-
-    rdr -> TMVA::Reader::AddVariable("photon_res", &photon_res);
-    rdr -> TMVA::Reader::AddVariable("photon_prap", &photon_rapidity);
-    rdr -> TMVA::Reader::AddVariable("l1_rapidity", &l1_rapidity);
-    rdr -> TMVA::Reader::AddVariable("l2_rapidity", &l2_rapidity);
-    rdr -> TMVA::Reader::AddVariable("phi", &phi);
-    rdr -> TMVA::Reader::BookMVA("BDT","../ggF_BDT/dataset/weights/TMVAClassification_ggF_BDT_test_BDTG.weights.xml"); 
+    rdr->TMVA::Reader::AddVariable("jj_deta", &jj_deta);
+    rdr->TMVA::Reader::AddVariable("jj_dphi", &jj_dphi);
+    rdr->TMVA::Reader::AddVariable("Zyjj_dr", &Zyjj_dr);
+    rdr->TMVA::Reader::AddVariable("pt_bal",  &pt_bal);
+    rdr->TMVA::Reader::AddVariable("zep_var", &zep_var);
+    rdr->TMVA::Reader::AddVariable("mjj", &mjj);
+    rdr->TMVA::Reader::AddVariable("drmin_yj", &drmin_yj);
+    rdr->TMVA::Reader::AddVariable("j1_pt", &j1_pt);
+    rdr->TMVA::Reader::AddVariable("j2_pt", &j2_pt);
+    rdr -> TMVA::Reader::BookMVA("BDT","/net/cms27/cms27r0/abarzdukas/ANTools/HZG_Start/HZG_VBF_BDT/VBF_BDT/dataset/weights/TMVAClassification_VBF_test_noypt_BDTG.weights.xml"); 
 
     float score = rdr -> EvaluateMVA("BDT");
     delete rdr;
     return score;
-
 }
 
 RVec<int> truth_matched(RVec<float> mc_pt, RVec<float> mc_eta, RVec<float> mc_phi,RVec<float> mc_m, RVec<float> mc_id, RVec<float> mc_momidx, 
@@ -507,13 +503,14 @@ if __name__=='__main__':
              ('el_sublead_pt','signal_sublead_electron_pt(el_pt,el_sig)'),
              ('mu_lead_pt'   ,'signal_lead_muon_pt(mu_pt,mu_sig)'),
              ('mu_sublead_pt','signal_sublead_muon_pt(mu_pt,mu_sig)'),
+             ('binning_bdt','getMVA(jj_deta,jj_dphi,Zyjj_dr,pt_bal,zep_var,mjj,drmin_yj,j1_pt,j2_pt,event)'),
              ('tm_jets','truth_matched_bool(mc_pt,mc_eta,mc_phi,mc_mass,mc_id,mc_momidx,jet_pt,jet_eta,jet_phi,jet_m,jet_isgood)'),
              ('event_number','event'),
              ('wgt','get_weight(w_lumi,' + str(w_year[sel]) + ')')]
    
     branches = ('photon_mva','min_dR','max_dR','pt_mass','cosTheta','costheta', 'phi','photon_res','photon_prap','y_pt','l1_rapidity','l2_rapidity',
                'j1_pt','j2_pt','jj_deta','jj_dphi','Zyjj_dphi','Zyjj_dr',"dr_jj",'pTt','Zy_dphi','drmin_yj','drmax_yj',"drmin_l1j","drmin_l2j",'pt_bal','zep_var',
-               'mlly','mjj','event_number','weight')
+               'mlly','mjj','binning_bdt','event_number','weight')
 
 #             ('kinMVA','getMVA(photon_mva,min_dR,max_dR,pt_mass,cosTheta,costheta,phi,photon_res,photon_prap,l1_rapidity,l2_rapidity)'),
 
@@ -525,9 +522,11 @@ if __name__=='__main__':
           
 
 
-    names = 'ntuples' # notm'
+    names = 'photon_bdt_ntuples' # notm'
     base_dir  = '/net/cms11/cms11r0/pico/NanoAODv9/htozgamma_kingscanyon_v1/'
     pico_type = '/mc/merged_zgmc_llg/'
+   
+
     sig_samples_VBF = ['*VBF*HToZG*125_*.root']                              
     sig_samples_ggF = ['*GluGlu*HToZG*125_*.root']
     sig_samples_VH = ['*WplusH_HToZG_WToAll_M-125*.root','*WminusH_HToZG_WToAll_M-125*.root','*ZH_HToZG_ZToAll*M-125*.root']                              
@@ -535,7 +534,6 @@ if __name__=='__main__':
     bkg_samples_tt = ['*_TGJets*.root','*_TTGJets*.root','*_TTTo2L2Nu*.root']                  
     bkg_samples_DY = ['*DYJetsToLL*amcatnloFXFX*.root','*ZGToLLG*.root']                 
     bkg_samples_EWK= ['*ZGamma2JToGamma2L2J_EWK*.root']                  
-
 
     #Make signal ntuples ggF
     write_ntuples([base_dir + year[sel] + pico_type + sig for sig in sig_samples_ggF],  cuts,  

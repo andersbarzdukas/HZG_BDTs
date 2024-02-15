@@ -14,8 +14,9 @@
 #include "TMVA/Tools.h"
 #include "TMVA/TMVAGui.h"
 
+string bdt_type = "ggF";
 
-int VBF_BDT_producer(TString rootIn="VBF_test_noypt",TString myMethodList = "" )
+int MJJ_BKG_REJ_BDT_producer(TString rootIn=bdt_type + "_mjj_sel_bdt_nopTt",TString myMethodList = "" )
 {
   TMVA::Tools::Instance();
   std::map<std::string,int> Use;
@@ -47,8 +48,14 @@ int VBF_BDT_producer(TString rootIn="VBF_test_noypt",TString myMethodList = "" )
   }
   
   // --------------------------------------------------------------------------------------------------
-  TString fname_sig = "ntuples/ntuples_sig_VBF_all.root";
-  TString fname_bkg = "ntuples/ntuples_sig_ggF_all.root";
+
+  TString fname_sig;
+  if(bdt_type == "ggF"){
+   fname_sig = "ntuples/photon_bdt_ntuples_sig_ggF_ALL.root";
+  } else { 
+   fname_sig = "ntuples/photon_bdt_ntuples_sig_VBF_ALL.root";
+  }
+  TString fname_bkg = "ntuples/photon_bdt_ntuples_bkg_ALL.root"; //photon_bdt_ntuples_ALL_nott.root";//
 
   if (gSystem->AccessPathName( fname_bkg ) || gSystem->AccessPathName( fname_sig ))  // file does not exist in local directory
     gSystem->Exec("curl -O http://root.cern.ch/files/tmva_class_example.root");
@@ -61,7 +68,7 @@ int VBF_BDT_producer(TString rootIn="VBF_test_noypt",TString myMethodList = "" )
 
   // Register the training and test trees
   TTree *signalTree     = (TTree*)input_sig->Get("tree");
-  TTree *background     = (TTree*)input_bkg->Get("tree");
+  TTree *backgroundTree = (TTree*)input_bkg->Get("tree");
 
 
   // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
@@ -73,53 +80,124 @@ int VBF_BDT_producer(TString rootIn="VBF_test_noypt",TString myMethodList = "" )
   TMVA::DataLoader *dataloader=new TMVA::DataLoader("dataset");
 
   //Standard variables used in Run 2 Dijet BDT
+
+  if(bdt_type=="ggF"){
+//    dataloader->AddVariable("pTt", 'F');
+    dataloader->AddVariable("min_dR", 'F');
+    dataloader->AddVariable("pt_mass", 'F');
+    dataloader->AddVariable("j1_pt", 'F');
+    dataloader->AddVariable("drmin_yj", 'F');
+    dataloader->AddVariable("jj_dphi", 'F');
+    dataloader->AddVariable("photon_res", 'F');
+    dataloader->AddVariable("max_dR", 'F');
+    dataloader->AddVariable("costheta", 'F');
+    dataloader->AddVariable("cosTheta", 'F');
+    dataloader->AddVariable("photon_mva", 'F');
+    dataloader->AddVariable("pt_bal", 'F');
+//    dataloader->AddVariable("l1_rapidity", 'F');
+    dataloader->AddVariable("j2_pt", 'F');
+    /*
+    dataloader->AddVariable("jj_deta", 'F');
+    dataloader->AddVariable("mjj", 'F');
+    dataloader->AddVariable("l2_rapidity", 'F');
+    dataloader->AddVariable("Zyjj_dr", 'F');
+    dataloader->AddVariable("zep_var", 'F');
+    dataloader->AddVariable("photon_prap", 'F');
+    */
+  } else {
+    dataloader->AddVariable("pTt", 'F');
+    dataloader->AddVariable("pt_bal", 'F');
+    dataloader->AddVariable("drmin_yj", 'F');
+    dataloader->AddVariable("j1_pt", 'F');
+    dataloader->AddVariable("min_dR", 'F');
+    dataloader->AddVariable("mjj", 'F');
+    dataloader->AddVariable("costheta", 'F');
+    dataloader->AddVariable("zep_var", 'F');
+    dataloader->AddVariable("j2_pt", 'F');
+    dataloader->AddVariable("max_dR", 'F');
+    dataloader->AddVariable("pt_mass", 'F');
+    dataloader->AddVariable("photon_mva", 'F');
+  }
+
+
+/*
+  //Sample list of variables
+  dataloader->AddVariable("min_dR", 'F');
+  dataloader->AddVariable("max_dR", 'F');
+  dataloader->AddVariable("pt_mass", 'F');
+  dataloader->AddVariable("pTt", 'F');
+  dataloader->AddVariable("zep_var", 'F');
+  dataloader->AddVariable("drmin_yj", 'F');
+  dataloader->AddVariable("pt_bal", 'F');
+  dataloader->AddVariable("photon_mva", 'F');
+  dataloader->AddVariable("costheta", 'F');
+  dataloader->AddVariable("j2_pt", 'F');
+  dataloader->AddVariable("mjj", 'F');
+  dataloader->AddVariable("j1_pt", 'F');
   dataloader->AddVariable("jj_deta", 'F');
   dataloader->AddVariable("jj_dphi", 'F');
+  dataloader->AddVariable("cosTheta", 'F');
+  dataloader->AddVariable("photon_prap", 'F');
   dataloader->AddVariable("Zyjj_dr", 'F');
-  dataloader->AddVariable("pt_bal", 'F');
-  dataloader->AddVariable("zep_var", 'F');
+  dataloader->AddVariable("l1_rapidity", 'F');
+  dataloader->AddVariable("l2_rapidity", 'F');
+  dataloader->AddVariable("photon_res", 'F');
+
+
+
+
+*/
+
+//Variables Omitted from VBF targeted BDT
+//  dataloader->AddVariable("jj_deta", 'F');
+//  dataloader->AddVariable("jj_dphi", 'F');
+//  dataloader->AddVariable("cosTheta", 'F');
+//  dataloader->AddVariable("photon_prap", 'F');
+//  dataloader->AddVariable("Zyjj_dr", 'F');
+//  dataloader->AddVariable("l1_rapidity", 'F');
+//  dataloader->AddVariable("l2_rapidity", 'F');
+//  dataloader->AddVariable("photon_res", 'F');
   //dataloader->AddVariable("y_pt", 'F');
-  dataloader->AddVariable("mjj", 'F');
-  dataloader->AddVariable("drmin_yj", 'F');
-  dataloader->AddVariable("j1_pt", 'F');
-  dataloader->AddVariable("j2_pt", 'F');
+//  dataloader->AddVariable("phi", 'F');
 
-  //dataloader->AddVariable("pTt", 'F');
-
-  //Potential variables (mjj is of particular interest)
-   //dataloader->AddVariable("kinMVA", 'F');
-  //dataloader->AddVariable("Zyjj_dphi", 'F');
-//  dataloader->AddVariable("cent_var", 'F');
-  //dataloader->AddVariable("drmax_yj", 'F');
-
-//  dataloader->AddVariable("pTt_perp", 'F');
-//  dataloader->AddVariable("pTt_wrong", 'F');
-//  dataloader->AddVariable("mjj", 'F');
 
 
   //Applying the weight to the MC samples
   Double_t signalWeight     = 1.0;
   Double_t backgroundWeight = 1.0;
 
-  dataloader->AddSignalTree    ( signalTree,     signalWeight );
-  dataloader->AddBackgroundTree( background, backgroundWeight );
+  TCut niceCut;
+  if(bdt_type == "ggF"){
+    niceCut= "mjj < 600 && drmin_yj > 0.4";
+  } else {
+    niceCut= "mjj > 600 && drmin_yj > 0.4";
+  }
+  TCut training = niceCut + "event_number%2==0";
+  TCut testing  = niceCut + "event_number%2==1";
+
+
+  dataloader->AddTree( signalTree, "Signal", 1.0, training, TMVA::Types::kTraining);
+  dataloader->AddTree( signalTree, "Signal", 1.0, testing,  TMVA::Types::kTesting);
+
+  dataloader->AddTree( backgroundTree, "Background", 1.0, training, TMVA::Types::kTraining);
+  dataloader->AddTree( backgroundTree, "Background", 1.0, testing,  TMVA::Types::kTesting);
+
+  //dataloader->AddSignalTree    ( signalTree,     signalWeight );
+  //dataloader->AddBackgroundTree( background, backgroundWeight );
 
   dataloader->SetSignalWeightExpression( "weight" );
   dataloader->SetBackgroundWeightExpression( "weight" );
 
   // Apply additional cuts on the signal and background samples (can be different)
   // These cuts should be fairly self explanatory
-  TCut niceCut = "dr_jj > 0.4 && drmin_yj > 0.4";
-  TCut mycuts = niceCut;
-  TCut mycutb = niceCut;
 
 
   //This block has all the settings for the BDT.
   //nTrain_Signal is number of signal training events
   //nTrain_Background is number of bkg. training events
   //SplitSeed is seed that randomly splits events (from SplitMode==Random) 
-  dataloader->PrepareTrainingAndTestTree( mycuts, mycutb,
-            "SplitMode=Random:SplitSeed=1000:NormMode=NumEvents:!V" );
+//  dataloader->PrepareTrainingAndTestTree( mycuts, mycutb,
+//            "SplitMode=Random:SplitSeed=1000:NormMode=NumEvents:!V" );
 
   // Boosted Decision Trees
   if (Use["BDTG"]) // Gradient Boost
@@ -169,5 +247,5 @@ int main( int argc, char** argv )
     if (!methodList.IsNull()) methodList += TString(",");
     methodList += regMethod;
   }
-  return VBF_BDT_producer(methodList);
+  return MJJ_BKG_REJ_BDT_producer(methodList);
 }
